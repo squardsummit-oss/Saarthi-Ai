@@ -1,0 +1,44 @@
+query AllAITools @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public as it only retrieves general information about AI tools.") {
+  aITools {
+    id
+    name
+    description
+    category
+    pricingModel
+  }
+}
+
+query MySubscriptions @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users as it only retrieves their own subscription data.") {
+  userSubscriptions(where: {userId: {eq_expr: "auth.uid"}}) {
+    id
+    startDate
+    endDate
+    status
+    subscriptionType {
+      name
+      price
+    }
+  }
+}
+
+mutation RecordUsage($aiToolId: UUID!, $usageQuantity: Int!, $usageDate: Date!) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users as it records their own usage data, linked to their auth.uid.") {
+  usageRecord_insert(data: {
+    userId_expr: "auth.uid",
+    aiToolId: $aiToolId,
+    usageQuantity: $usageQuantity,
+    usageDate: $usageDate,
+    createdAt_expr: "request.time"
+  }) {
+    id
+  }
+}
+
+query AllSubscriptionTypes @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public as it only retrieves general information about subscription types.") {
+  subscriptionTypes {
+    id
+    name
+    price
+    features
+    monthlyCredits
+  }
+}
