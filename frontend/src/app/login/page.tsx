@@ -36,6 +36,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [verificationSent, setVerificationSent] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState('');
+  const [showResend, setShowResend] = useState(false);
 
   // ─── User Sign In ───
   const handleUserSignIn = async (e: React.FormEvent) => {
@@ -48,12 +49,30 @@ export default function LoginPage() {
       if (!cred.user.emailVerified) {
         await signOut(auth);
         setError('Please verify your email before signing in. Check your inbox for the verification link.');
+        setShowResend(true);
         setLoading(false);
         return;
       }
+      setShowResend(false);
       router.push('/');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Sign in failed';
+      setError(msg.replace('Firebase: ', '').replace(/\(auth\/.*\)/, '').trim());
+    }
+    setLoading(false);
+  };
+
+  const handleResendVerification = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      const cred = await signInWithEmailAndPassword(auth, userEmail, userPassword);
+      await sendEmailVerification(cred.user);
+      setVerificationSent(true);
+      setVerificationEmail(userEmail);
+      await signOut(auth);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to send verification email';
       setError(msg.replace('Firebase: ', '').replace(/\(auth\/.*\)/, '').trim());
     }
     setLoading(false);
@@ -268,6 +287,20 @@ export default function LoginPage() {
               <button type="submit" className="gl-submit" disabled={loading}>
                 {loading ? <span className="gl-spinner" /> : 'Sign In'}
               </button>
+              
+              {showResend && (
+                <div style={{ marginTop: 12, textAlign: 'center' }}>
+                  <button 
+                    type="button" 
+                    className="gl-submit" 
+                    style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)' }}
+                    onClick={handleResendVerification}
+                    disabled={loading}
+                  >
+                    Resend Verification Email
+                  </button>
+                </div>
+              )}
             </form>
           )}
 
@@ -386,11 +419,11 @@ export default function LoginPage() {
               <>
                 <p className="gl-toggle-text">
                   Don&apos;t have an account?{' '}
-                  <button className="gl-toggle-btn" onClick={() => { setMode('register'); setError(''); }}>
+                  <button className="gl-toggle-btn" onClick={() => { setMode('register'); setError(''); setShowResend(false); }}>
                     Register
                   </button>
                 </p>
-                <button className="gl-toggle-btn gl-admin-link" onClick={() => { setMode('admin'); setError(''); }}>
+                <button className="gl-toggle-btn gl-admin-link" onClick={() => { setMode('admin'); setError(''); setShowResend(false); }}>
                   Admin Login
                 </button>
               </>
@@ -398,14 +431,14 @@ export default function LoginPage() {
             {mode === 'register' && (
               <p className="gl-toggle-text">
                 Already have an account?{' '}
-                <button className="gl-toggle-btn" onClick={() => { setMode('login'); setError(''); }}>
+                <button className="gl-toggle-btn" onClick={() => { setMode('login'); setError(''); setShowResend(false); }}>
                   Sign In
                 </button>
               </p>
             )}
             {mode === 'admin' && (
               <p className="gl-toggle-text">
-                <button className="gl-toggle-btn" onClick={() => { setMode('login'); setError(''); }}>
+                <button className="gl-toggle-btn" onClick={() => { setMode('login'); setError(''); setShowResend(false); }}>
                   ← Back to User Login
                 </button>
               </p>

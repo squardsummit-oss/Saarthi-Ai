@@ -121,6 +121,14 @@ function AdminDashboard() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Complaint edit state
+  const [showComplaintForm, setShowComplaintForm] = useState(false);
+  const [editingComplaint, setEditingComplaint] = useState<Complaint | null>(null);
+  const [complaintText, setComplaintText] = useState('');
+  const [complaintDept, setComplaintDept] = useState('');
+  const [complaintCategory, setComplaintCategory] = useState('');
+  const [complaintUrgency, setComplaintUrgency] = useState('');
+
   // Sector form state
   const [showSectorForm, setShowSectorForm] = useState(false);
   const [editingSector, setEditingSector] = useState<ServiceSector | null>(null);
@@ -267,6 +275,41 @@ function AdminDashboard() {
       showNotification('error', 'Update Failed', 'Could not update complaint status.');
     }
     setUpdatingId(null);
+  };
+
+  const openEditComplaint = (complaint: Complaint) => {
+    setEditingComplaint(complaint);
+    setComplaintText(complaint.translatedText || complaint.originalText || '');
+    setComplaintDept(complaint.department || '');
+    setComplaintCategory(complaint.category || '');
+    setComplaintUrgency(complaint.urgency || 'Medium');
+    setShowComplaintForm(true);
+  };
+
+  const saveComplaint = async () => {
+    if (!editingComplaint) return;
+    try {
+      await updateDoc(doc(db, 'complaints', editingComplaint.id), {
+        translatedText: complaintText,
+        department: complaintDept,
+        category: complaintCategory,
+        urgency: complaintUrgency,
+      });
+      showNotification('success', 'Complaint Updated', `Complaint #${editingComplaint.id.slice(0, 8).toUpperCase()} has been updated.`);
+      setShowComplaintForm(false);
+    } catch {
+      showNotification('error', 'Update Failed', 'Could not update complaint.');
+    }
+  };
+
+  const deleteComplaint = async (id: string) => {
+    if (!window.confirm('Are you sure you want to permanently delete this complaint?')) return;
+    try {
+      await deleteDoc(doc(db, 'complaints', id));
+      showNotification('success', 'Complaint Deleted', `Complaint #${id.slice(0, 8).toUpperCase()} has been removed.`);
+    } catch {
+      showNotification('error', 'Delete Failed', 'Could not delete complaint.');
+    }
   };
 
   // Sector CRUD
@@ -472,6 +515,53 @@ function AdminDashboard() {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {/* Complaint Edit Modal */}
+              {showComplaintForm && editingComplaint && (
+                <div className="admin-modal-overlay" onClick={() => setShowComplaintForm(false)}>
+                  <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                      <h3 style={{ fontSize: 18, fontWeight: 700 }}>Edit Complaint</h3>
+                      <button className="btn-icon" onClick={() => setShowComplaintForm(false)} style={{ width: 36, height: 36 }}>
+                        <X size={16} />
+                      </button>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                      <div>
+                        <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, display: 'block' }}>COMPLAINT TEXT</label>
+                        <textarea className="textarea" rows={3} value={complaintText} onChange={(e) => setComplaintText(e.target.value)} />
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                        <div>
+                          <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, display: 'block' }}>DEPARTMENT</label>
+                          <input className="input" value={complaintDept} onChange={(e) => setComplaintDept(e.target.value)} />
+                        </div>
+                        <div>
+                          <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, display: 'block' }}>CATEGORY</label>
+                          <input className="input" value={complaintCategory} onChange={(e) => setComplaintCategory(e.target.value)} />
+                        </div>
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, display: 'block' }}>URGENCY</label>
+                        <select className="select" value={complaintUrgency} onChange={(e) => setComplaintUrgency(e.target.value)}>
+                          <option value="Critical">Critical</option>
+                          <option value="High">High</option>
+                          <option value="Medium">Medium</option>
+                          <option value="Low">Low</option>
+                        </select>
+                      </div>
+                      <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                        <button className="btn-primary" onClick={saveComplaint} style={{ flex: 1, justifyContent: 'center', padding: '12px 24px' }}>
+                          <span>Save Changes</span>
+                        </button>
+                        <button className="btn-secondary" onClick={() => setShowComplaintForm(false)} style={{ padding: '12px 24px' }}>
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {filtered.map(c => (
                 <div key={c.id} className="admin-complaint-card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
@@ -515,6 +605,14 @@ function AdminDashboard() {
                         {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
                       {updatingId === c.id && <div className="step-spinner" style={{ width: 18, height: 18 }} />}
+                      <div style={{ display: 'flex', gap: 4, marginLeft: 8 }}>
+                        <button className="btn-icon" style={{ width: 34, height: 34, border: 'none' }} onClick={() => openEditComplaint(c)} title="Edit Complaint">
+                          <Edit2 size={15} />
+                        </button>
+                        <button className="btn-icon" style={{ width: 34, height: 34, border: 'none', color: 'var(--error)' }} onClick={() => deleteComplaint(c.id)} title="Delete Complaint">
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
