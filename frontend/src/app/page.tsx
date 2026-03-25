@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import BottomNav from '@/components/BottomNav';
 import { NotificationProvider } from '@/components/NotificationProvider';
+import NavyFluidBackground from '@/components/NavyFluidBackground';
 import { auth, db } from '../../lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -83,6 +84,7 @@ export default function HomePage() {
 
   return (
     <NotificationProvider>
+      <NavyFluidBackground />
       <div className="page-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 16 }}>
 
         {/* Sign Out Header — always visible when authenticated */}

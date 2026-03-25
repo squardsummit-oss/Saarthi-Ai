@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Mic, MicOff, Send, ArrowLeft, Camera, X, Loader2 } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { NotificationProvider, useNotification } from '@/components/NotificationProvider';
+import NavyFluidBackground from '@/components/NavyFluidBackground';
 
 // ── Language Config ───────────────────────────────────────────
 const LANG_OPTIONS = [
@@ -474,6 +475,7 @@ function ComplaintForm() {
 export default function ComplaintPage() {
   return (
     <NotificationProvider>
+      <NavyFluidBackground />
       <Suspense fallback={<div className="page-container" style={{ paddingTop: 40, textAlign: 'center' }}><div className="step-spinner" style={{ margin: '0 auto' }} /></div>}>
         <ComplaintForm />
       </Suspense>

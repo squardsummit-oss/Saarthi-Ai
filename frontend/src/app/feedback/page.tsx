@@ -5,6 +5,7 @@ import { ArrowLeft, Send, Star, CheckCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import BottomNav from '@/components/BottomNav';
 import { NotificationProvider, useNotification } from '@/components/NotificationProvider';
+import NavyFluidBackground from '@/components/NavyFluidBackground';
 import { auth } from '../../../lib/firebase';
 
 function FeedbackForm() {
@@ -169,6 +170,7 @@ function FeedbackForm() {
 export default function FeedbackPage() {
   return (
     <NotificationProvider>
+      <NavyFluidBackground />
       <FeedbackForm />
     </NotificationProvider>
   );

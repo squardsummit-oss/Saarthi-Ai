@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { NotificationProvider } from '@/components/NotificationProvider';
+import NavyFluidBackground from '@/components/NavyFluidBackground';
 
 // Dynamically import the map component with SSR disabled
 // This prevents Leaflet from being loaded on the server where `window` is not defined
@@ -21,6 +22,7 @@ const MapViewInner = dynamic(
 export default function MapPage() {
   return (
     <NotificationProvider>
+      <NavyFluidBackground />
       <MapViewInner />
     </NotificationProvider>
   );

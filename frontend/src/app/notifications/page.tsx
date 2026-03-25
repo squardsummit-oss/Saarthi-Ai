@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Bell, Check } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { NotificationProvider } from '@/components/NotificationProvider';
+import NavyFluidBackground from '@/components/NavyFluidBackground';
 import { db, auth } from '../../../lib/firebase';
 import { collection, query, where, orderBy, onSnapshot, updateDoc, doc, writeBatch } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -178,6 +179,7 @@ function NotificationsView() {
 export default function NotificationsPage() {
   return (
     <NotificationProvider>
+      <NavyFluidBackground />
       <NotificationsView />
     </NotificationProvider>
   );

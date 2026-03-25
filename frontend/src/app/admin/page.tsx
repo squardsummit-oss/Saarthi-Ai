@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, BarChart3, Clock, CheckCircle, AlertTriangle, Plus, X, Edit2, Trash2, Volume2, Search, BookOpen, Settings, LogOut, Mail } from 'lucide-react';
 
 import { NotificationProvider, useNotification } from '@/components/NotificationProvider';
+import AnimatedBackground from '@/components/AnimatedBackground';
 import { db, auth } from '../../../lib/firebase';
 import { collection, query, onSnapshot, doc, updateDoc, addDoc, deleteDoc, getDocs, Timestamp, getDoc, setDoc } from 'firebase/firestore';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
@@ -380,6 +381,7 @@ function AdminDashboard() {
 
   return (
     <div className="page-container wide" style={{ paddingTop: 20, maxWidth: 1000 }}>
+      <AnimatedBackground />
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
         <button className="btn-icon" onClick={() => router.push('/login')}>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Clock, Filter, RefreshCw } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { NotificationProvider, useNotification } from '@/components/NotificationProvider';
+import NavyFluidBackground from '@/components/NavyFluidBackground';
 import { db, auth } from '../../../lib/firebase';
 import { collection, query, onSnapshot, where, limit } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -202,6 +203,7 @@ function TrackingDashboard() {
 export default function TrackPage() {
   return (
     <NotificationProvider>
+      <NavyFluidBackground />
       <TrackingDashboard />
     </NotificationProvider>
   );

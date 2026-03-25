@@ -163,12 +163,13 @@ export default function LoginPage() {
   if (verificationSent) {
     return (
       <div className="gl-page">
-        <div className="gl-bg">
+      <div className="gl-bg">
           <div className="gl-blob gl-blob-1" />
           <div className="gl-blob gl-blob-2" />
           <div className="gl-blob gl-blob-3" />
           <div className="gl-blob gl-blob-4" />
         </div>
+        <div className="gl-brand-watermark">SAARTHI AI</div>
         <div className="gl-wrapper">
           <div className="gl-border-glow" />
           <div className="gl-card" style={{ textAlign: 'center' }}>
@@ -210,6 +211,9 @@ export default function LoginPage() {
         <div className="gl-blob gl-blob-3" />
         <div className="gl-blob gl-blob-4" />
       </div>
+
+      {/* SAARTHI AI brand watermark */}
+      <div className="gl-brand-watermark">SAARTHI AI</div>
 
       {/* Glass card with rotating border */}
       <div className={`gl-wrapper ${mode === 'register' ? 'gl-wrapper-expanded' : ''} ${mode === 'admin' ? 'gl-wrapper-admin' : ''}`}>
